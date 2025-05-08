@@ -6,3 +6,4 @@ bcrypt
 pytest
 aiosqlite
 sqlalchemy[asyncio]
+pytest-asyncio
