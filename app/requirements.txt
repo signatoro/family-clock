@@ -1,2 +1,9 @@
 fastapi
 pydantic
+pydantic[email]
+SQLAlchemy
+bcrypt
+pytest
+aiosqlite
+sqlalchemy[asyncio]
+pytest-asyncio

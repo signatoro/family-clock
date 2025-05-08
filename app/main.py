@@ -1,4 +1,19 @@
 
+from app.src.util.db import Base, engine
+from app.src.models import user
+
+def init():
+    Base.metadata.create_all(bind=engine)
+
+if __name__ == "__main__":
+    init()
+
+
+
+
+
+
+
 # import asyncio
 # import logging
 # import uvicorn
