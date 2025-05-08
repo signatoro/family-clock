@@ -1,31 +1,19 @@
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
-# import os
+import os
+from typing import AsyncGenerator
 
-# DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
-
-# # Set check_same_thread=False for SQLite only
-# engine = create_engine(
-#     DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
-# )
-
-# # Use scoped_session for thread safety (especially in web apps)
-# SessionLocal = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
-
-# Base = declarative_base()
-
-# # Dependency (for FastAPI or manual use)
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
+from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "sqlite+aiosqlite:///./familyclock.db"
+
+# Load environment variables from .env
+load_dotenv()
+
+# Get the DB path from environment variable or use default
+DB_PATH = os.getenv("DB_PATH", "data/familyclock.db")
+
+# SQLite URI for SQLAlchemy async
+DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 AsyncSessionLocal = sessionmaker(
@@ -36,6 +24,9 @@ AsyncSessionLocal = sessionmaker(
 
 Base = declarative_base()
 
-async def get_db():
+# Dependency
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
+
+
