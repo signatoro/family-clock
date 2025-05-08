@@ -22,21 +22,6 @@ class UserController():
             pending_group_list=json.dumps(user.pending_group_list),
         )
 
-        # I might need this. It is very unclear
-        # # Insert statement using SQL Expression Language
-        # stmt = insert(user_model.User).values(
-        #     username=db_user.username,
-        #     email=db_user.email,
-        #     phone_number=db_user.phone_number,
-        #     disabled=db_user.disabled,
-        #     hashed_password=db_user.hashed_password,
-        #     owned_groups_list=db_user.owned_groups_list,
-        #     joined_groups_list=db_user.joined_groups_list,
-        #     pending_group_list=db_user.pending_group_list
-        # )
-
-        # # Execute the insert operation
-        # await db.execute(stmt)
         db.add(db_user)
         await db.commit()  # Commit the transaction
         await db.refresh(db_user)
