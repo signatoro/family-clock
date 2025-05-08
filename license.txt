@@ -1,0 +1,11 @@
+Copyright 2025 Scott Pignataro
+
+Permission is granted to use this software for personal, non-commercial purposes only.
+
+You may not:
+- Modify, adapt, or create derivative works of this software.
+- Redistribute the software in any form.
+- Use the software for commercial purposes.
+
+This software is provided "as is", without warranty of any kind.
+
