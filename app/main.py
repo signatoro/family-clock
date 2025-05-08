@@ -7,6 +7,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.src.api import auth_endpoints
 from app.src.util.db import Base, engine
 from app.src.api.user_endpoints import UserEndpoints
 from app.src.controller.user_controller import UserController
@@ -56,6 +57,7 @@ def init():
     user_endpoints = UserEndpoints(user_controller)
 
     app.include_router(user_endpoints.router)
+    app.include_router(auth_endpoints.router)
 
     return app
 
@@ -67,4 +69,3 @@ def start_program():
 
 if __name__ == "__main__":
     start_program()
-

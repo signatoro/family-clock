@@ -16,6 +16,7 @@ class User(Base):
     disabled = Column(Boolean, default=False)
 
     hashed_password = Column(String, nullable=False)
+    refresh_token = Column(String, nullable=True)
 
     # Store group lists as JSON strings (SQLite-friendly)
     owned_groups_list = Column(Text, default="[]")

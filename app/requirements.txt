@@ -9,3 +9,6 @@ sqlalchemy[asyncio]
 pytest-asyncio
 python-dotenv
 uvicorn
+python-jose[cryptography]
+passlib
+python-multipart
