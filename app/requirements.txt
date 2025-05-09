@@ -12,3 +12,4 @@ uvicorn
 python-jose[cryptography]
 passlib
 python-multipart
+pytest-sugar  
