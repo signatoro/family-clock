@@ -3,13 +3,16 @@ import os
 import logging
 from datetime import datetime, timedelta
 
+from sqlalchemy import select
 from jose import JWTError, jwt
 from dotenv import load_dotenv
 from passlib.context import CryptContext
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.src.models.user import User
+from app.src.util.db import get_db
 
 # Load environment variables from .env
 load_dotenv()
@@ -36,24 +39,23 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 # Token creation
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(datetime.timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     data.update({"exp": expire})
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 def create_refresh_token(data: dict):
-    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    expire = datetime.now(datetime.timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     data.update({"exp": expire})
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 def decode_token(token: str):
     return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
-# Token verification
-def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    from app.src.util.db import get_db  # avoid circular import
-    from sqlalchemy.future import select
-    import asyncio
 
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db)
+) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -68,10 +70,9 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     except JWTError:
         raise credentials_exception
 
-    # Look up the user from DB synchronously
-    db = asyncio.run(get_db().__anext__())
-    result = db.execute(select(User).where(User.username == username))
+    result = await db.execute(select(User).where(User.username == username))
     user = result.scalar_one_or_none()
     if user is None:
         raise credentials_exception
+
     return user

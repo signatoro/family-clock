@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.src.util.db import get_db
 from app.src.models.user import User
 from app.src.models.schema import Token
-from app.src.util.auth import decode_token, verify_password, create_access_token, create_refresh_token
+from app.src.util.auth import decode_token, verify_password, create_access_token, create_refresh_token, oauth2_scheme
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -86,3 +86,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
         "refresh_token": refresh_token,
         "token_type": "bearer"
     }
+
+@router.get("/secure-test")
+async def secure_test(token: str = Depends(oauth2_scheme)):
+    return {"message": "You're authenticated!", "token": token}

@@ -8,10 +8,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.src.util.db import get_db
 from app.src.models.schema import Token
-from app.src.util.auth import hash_password
 from app.src.models.schema import User, UserDB
 from app.src.controller.user_controller import UserController
-from app.src.util.auth import verify_password, create_access_token, create_refresh_token
+from app.src.util.auth import get_current_user, hash_password
+from app.src.util.auth import verify_password, create_access_token, create_refresh_token, oauth2_scheme
 
 
 class UserEndpoints():
@@ -25,6 +25,9 @@ class UserEndpoints():
         self.controller = controller
 
         self.router.add_api_route('/create', self.create_new_user, methods=["POST"])
+        self.router.add_api_route('/token', self.read_users_me, methods=['GET'])
+        # self.router.add_api_route('/whoami', self.who_am_i, methods=['GET'])
+
         # self.router.add_api_route('/login', self.login, methods=['POST'])
 
     
@@ -59,6 +62,17 @@ class UserEndpoints():
                 "email": user.email
             }
         }
+
+    async def read_users_me(self, token: str = Depends(oauth2_scheme)):
+        return {"token": token}
+    
+
+    # async def who_am_i(self, current_user: UserDB = Depends(get_current_user)):
+    #     return {
+    #         "username": current_user.username,
+    #         "email": current_user.email,
+    #         "phone_number": current_user.phone_number,
+    # }
 
     
     # async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):

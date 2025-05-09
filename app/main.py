@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.src.api import auth_endpoints
+from app.src.api.group_endpoints import GroupEndpoints
 from app.src.util.db import Base, engine
 from app.src.api.user_endpoints import UserEndpoints
 from app.src.controller.user_controller import UserController
@@ -55,9 +56,11 @@ def init():
 
     user_controller = UserController()
     user_endpoints = UserEndpoints(user_controller)
+    group_endpoints = GroupEndpoints()
 
     app.include_router(user_endpoints.router)
     app.include_router(auth_endpoints.router)
+    app.include_router(group_endpoints.router)
 
     return app
 
