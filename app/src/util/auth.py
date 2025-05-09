@@ -14,7 +14,6 @@ from fastapi.security import OAuth2PasswordBearer
 from app.src.models.user import User
 from app.src.util.db import get_db
 
-# Load environment variables from .env
 load_dotenv()
 
 # Config
@@ -30,14 +29,12 @@ REFRESH_TOKEN_EXPIRE_DAYS = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")  # Your login URL
 
-# Password hashing
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
-# Token creation
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     expire = datetime.now(datetime.timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     data.update({"exp": expire})

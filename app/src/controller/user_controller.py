@@ -23,7 +23,7 @@ class UserController():
         )
 
         db.add(db_user)
-        await db.commit()  # Commit the transaction
+        await db.commit() 
         await db.refresh(db_user)
 
         return db_user
@@ -36,19 +36,21 @@ class UserController():
         return db_users
 
     async def get_user_by_username(self, db: AsyncSession, username: str) -> user_model.User | None:
-        # Use 'select' instead of 'query'
         stmt = select(user_model.User).filter(user_model.User.username == username)
         result = await db.execute(stmt)
         
-        # Fetch the first result, or return None if not found
+        return result.scalars().first()
+    
+    async def get_user_by_email(self, db: AsyncSession, email: str) -> user_model.User | None:
+        stmt = select(user_model.User).filter(user_model.User.email == email)
+        result = await db.execute(stmt)
+        
         return result.scalars().first()
 
     async def get_user_by_id(self, db: AsyncSession, user_id: int) -> user_model.User | None:
-        # Use 'select' instead of 'query'
         stmt = select(user_model.User).filter(user_model.User.id == user_id)
         result = await db.execute(stmt)
         
-        # Fetch the first result, or return None if not found
         return result.scalars().first()
 
     def __user_to_schema__(self, db_user: user_model.User) -> user_schema.UserDB:
