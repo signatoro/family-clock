@@ -1,12 +1,19 @@
 # app/tests/conftest.py
 
+import json
+import secrets
+import string
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from app.src.util.db import Base
-from app.src.models.schema import UserDB  # Assuming this is your model from Pydantic
+
 import bcrypt
+
+from app.src.models import user as user_model
+from app.src.models.schema import UserDB 
+
 
 # In-memory SQLite for testing
 DATABASE_URL = "sqlite+aiosqlite:///:memory:"  
@@ -29,6 +36,25 @@ async def db():
         yield session
 
     await engine.dispose()
+
+@pytest.fixture
+def sample_raw_user() -> user_model.User:
+    db_user = user_model.User(
+        username="testuser",
+        email="test@example.com",
+        phone_number="555-1234",
+        disabled=False,
+        hashed_password='hased',
+        owned_groups_list=json.dumps([]),
+        joined_groups_list=json.dumps([]),
+        pending_group_list=json.dumps([]),
+    )
+    return db_user
+
+@pytest.fixture
+def sample_passwords(count=20, length=14) -> list[str]:
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    return [ ''.join(secrets.choice(alphabet) for _ in range(length)) for _ in range(count) ]
 
 @pytest.fixture
 def sample_user() -> UserDB:

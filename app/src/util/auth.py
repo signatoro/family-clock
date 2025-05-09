@@ -1,7 +1,7 @@
 # app/src/util/auth.py
 import os
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 from jose import JWTError, jwt
@@ -19,8 +19,11 @@ load_dotenv()
 # Config
 SECRET_KEY = os.getenv("SECRET_KEY", "EmqUQGgxtxATSKl299MYnliwM99Iu6zj4v56HShpIT4RAXXAfQ31ce8r/I388KzGJuUkc0+JTBQe7EULO30Qtg==")
 if SECRET_KEY == "EmqUQGgxtxATSKl299MYnliwM99Iu6zj4v56HShpIT4RAXXAfQ31ce8r/I388KzGJuUkc0+JTBQe7EULO30Qtg==":
-    logging.warning("!! USING DEFAULT SECRET KEY !!\n You NEED to give a different secret key as an environmental variable!")
-ALGORITHM = "HS256"
+    logging.warning("!! USING DEFAULT SECRET KEY !!\nYou NEED to give a DIFFERENT secret key as an environmental variable!")
+    logging.warning("!! USING DEFAULT SECRET KEY !!\nYou NEED to give a DIFFERENT secret key as an environmental variable!")
+    logging.warning("!! USING DEFAULT SECRET KEY !!\nYou NEED to give a DIFFERENT secret key as an environmental variable!")
+
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 
 REFRESH_TOKEN_EXPIRE_DAYS = 30
@@ -36,7 +39,7 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    expire = datetime.now(datetime.timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     data.update({"exp": expire})
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
